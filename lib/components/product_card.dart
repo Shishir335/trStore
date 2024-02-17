@@ -24,13 +24,17 @@ class ProductCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(children: [
-            Hero(
-              tag: product.id!,
-              child: Image.network(product.image!,
-                  height: 50, width: 50, fit: BoxFit.cover),
+            Expanded(
+              flex: 2,
+              child: Hero(
+                tag: product.id!,
+                child: Image.network(product.image!,
+                    height: 50, width: 50, fit: BoxFit.cover),
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
+              flex: 9,
               child: Column(children: [
                 Text(product.title!,
                     maxLines: 2,
@@ -41,32 +45,41 @@ class ProductCard extends StatelessWidget {
               ]),
             ),
             const SizedBox(width: 10),
-            Consumer<CartProvider>(builder: (context, provider, _) {
-              Product? cartProduct = provider.getProduct(product.id!);
-              return Container(
-                decoration: BoxDecoration(border: Border.all()),
-                child: Row(children: [
-                  Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: InkWell(
-                          onTap: () {
-                            provider.removeFromCart(product);
-                          },
-                          child: const Icon(Icons.remove))),
-                  Text(cartProduct == null
-                      ? '0'
-                      : cartProduct.quantity.toString()),
-                  Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: InkWell(
-                        onTap: () {
+            Expanded(
+              flex: 3,
+              child: Consumer<CartProvider>(builder: (context, provider, _) {
+                Product? cartProduct = provider.getProduct(product.id!);
+                return cartProduct == null
+                    ? IconButton(
+                        onPressed: () {
                           provider.addToCart(product);
                         },
-                        child: const Icon(Icons.add)),
-                  ),
-                ]),
-              );
-            }),
+                        icon: const Icon(Icons.add_shopping_cart))
+                    : Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Row(children: [
+                          Padding(
+                              padding: const EdgeInsets.all(3),
+                              child: InkWell(
+                                  onTap: () {
+                                    provider.removeFromCart(product);
+                                  },
+                                  child: const Icon(Icons.remove))),
+                          Text(cartProduct.quantity.toString()),
+                          Padding(
+                            padding: const EdgeInsets.all(3),
+                            child: InkWell(
+                                onTap: () {
+                                  provider.addToCart(product);
+                                },
+                                child: const Icon(Icons.add)),
+                          ),
+                        ]),
+                      );
+              }),
+            ),
           ]),
         ),
       ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tr_store/api_service/api_service.dart';
@@ -9,6 +11,9 @@ import 'package:tr_store/providers/products_provider.dart';
 import 'package:tr_store/screens/splash_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
+
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
         create: (context) => ProductProvider(apiService: ApiService())),
@@ -33,5 +38,14 @@ class MyApp extends StatelessWidget {
         CartScreen.routeName: (context) => const CartScreen(),
       },
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

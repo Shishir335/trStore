@@ -8,9 +8,6 @@ class Product {
   String? thumbnail;
   String? status;
   String? category;
-  String? publishedAt;
-  String? updatedAt;
-  int? userId;
   int? quantity;
 
   Product(
@@ -23,9 +20,6 @@ class Product {
       this.thumbnail,
       this.status,
       this.category,
-      this.publishedAt,
-      this.updatedAt,
-      this.userId,
       this.quantity = 0});
 
   Product.fromJson(Map<String, dynamic> json) {
@@ -38,9 +32,7 @@ class Product {
     thumbnail = json['thumbnail'];
     status = json['status'];
     category = json['category'];
-    publishedAt = json['publishedAt'];
-    updatedAt = json['updatedAt'];
-    userId = json['userId'];
+    quantity = json['quantity'];
   }
 
   Map<String, dynamic> toJson() {
@@ -54,9 +46,25 @@ class Product {
     data['thumbnail'] = thumbnail;
     data['status'] = status;
     data['category'] = category;
-    data['publishedAt'] = publishedAt;
-    data['updatedAt'] = updatedAt;
-    data['userId'] = userId;
+    data['quantity'] = quantity;
     return data;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'slug': slug,
+      'url': url,
+      'title': title,
+      'content': content,
+      'image': image,
+      'thumbnail': thumbnail,
+      'status': status,
+      'category': category,
+      'publishedAt': id,
+      'updatedAt': id,
+      'userId': id,
+      'quantity': quantity,
+    };
   }
 }

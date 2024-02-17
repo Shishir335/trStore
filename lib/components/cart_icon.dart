@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tr_store/providers/cart_provider.dart';
@@ -19,19 +18,22 @@ class CartIcon extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             const Icon(Icons.shopping_cart_outlined),
-            Positioned(
-              top: -12,
-              right: -5,
-              child: Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: AppColors.secondaryColor),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Text(provider.cartProducts.length.toString(),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white)),
-                  )),
-            )
+            if (provider.cartProducts.isNotEmpty)
+              Positioned(
+                top: -12,
+                right: -5,
+                child: Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.secondaryColor),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Text(provider.cartProducts.length.toString(),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                    )),
+              )
           ],
         ),
         padding: const EdgeInsets.only(right: 10),
