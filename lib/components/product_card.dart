@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tr_store/providers/cart_provider.dart';
 import 'package:tr_store/utils/colors.dart';
 import 'package:tr_store/screens/details_screen.dart';
 import 'package:tr_store/models/product.dart';
@@ -39,7 +41,32 @@ class ProductCard extends StatelessWidget {
               ]),
             ),
             const SizedBox(width: 10),
-            Container(height: 50, width: 50, color: Colors.red),
+            Consumer<CartProvider>(builder: (context, provider, _) {
+              Product? cartProduct = provider.getProduct(product.id!);
+              return Container(
+                decoration: BoxDecoration(border: Border.all()),
+                child: Row(children: [
+                  Padding(
+                      padding: const EdgeInsets.all(3),
+                      child: InkWell(
+                          onTap: () {
+                            provider.removeFromCart(product);
+                          },
+                          child: const Icon(Icons.remove))),
+                  Text(cartProduct == null
+                      ? '0'
+                      : cartProduct.quantity.toString()),
+                  Padding(
+                    padding: const EdgeInsets.all(3),
+                    child: InkWell(
+                        onTap: () {
+                          provider.addToCart(product);
+                        },
+                        child: const Icon(Icons.add)),
+                  ),
+                ]),
+              );
+            }),
           ]),
         ),
       ),

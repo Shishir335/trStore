@@ -11,6 +11,7 @@ class Product {
   String? publishedAt;
   String? updatedAt;
   int? userId;
+  int? quantity;
 
   Product(
       {this.id,
@@ -24,7 +25,8 @@ class Product {
       this.category,
       this.publishedAt,
       this.updatedAt,
-      this.userId});
+      this.userId,
+      this.quantity = 0});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
