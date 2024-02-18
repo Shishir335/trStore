@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return const Scaffold(
         body: Center(
-      child: Text('Logo',
+      child: Text('TR Store',
           style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold)),
     ));
   }

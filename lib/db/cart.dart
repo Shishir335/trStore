@@ -1,25 +1,13 @@
 import 'dart:async';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqflite.dart' as sql;
 import 'package:tr_store/models/product.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._internal();
-  late Database _database;
-
-  factory DatabaseHelper() => _instance;
-
-  DatabaseHelper._internal();
-
-  Future<void> initDatabase() async {
-    String path = join(await getDatabasesPath(), 'products.db');
-    _database = await openDatabase(path, version: 1, onCreate: _onCreate);
-  }
-
-  Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE products (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+  static Future<void> createTables(sql.Database db) async {
+    await db.execute("""
+      CREATE TABLE cartItems (
+        cartId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        id INTEGER,
         slug TEXT,
         url TEXT,
         title TEXT,
@@ -30,35 +18,86 @@ class DatabaseHelper {
         category TEXT,
         quantity INTEGER DEFAULT 0
       )
-    ''');
+    """);
   }
 
-  Future<int> insertProduct(Product product) async {
-    print(product.toMap());
-    return await _database.insert('products', product.toMap());
-  }
-
-  Future<List<Product>> getTasks() async {
-    final List<Map<String, dynamic>> maps = await _database.query('products');
-    return List.generate(maps.length, (index) {
-      return Product(id: maps[index]['id'], title: maps[index]['title']);
+  static Future<sql.Database> db() async {
+    return sql.openDatabase('cart.db', version: 1,
+        onCreate: (sql.Database database, int version) async {
+      print("........creating a table........");
+      await createTables(database);
     });
   }
 
-  Future<int> updateTask(Product product) async {
-    return await _database.update(
-      'products',
-      product.toMap(),
-      where: 'id = ?',
-      whereArgs: [product.id],
-    );
+  static Future<int> addToCart(Product product) async {
+    final db = await DatabaseHelper.db();
+
+    final data = {
+      'id': product.id,
+      'title': product.title,
+      'url': product.url,
+      'slug': product.slug,
+      'content': product.content,
+      'image': product.image,
+      'thumbnail': product.thumbnail,
+      'status': product.status,
+      'category': product.category,
+      'quantity': 1
+    };
+
+    final id = await db.insert('cartItems', data,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace);
+
+    return id;
   }
 
-  Future<int> deleteTask(int taskId) async {
-    return await _database.delete(
-      'products',
-      where: 'id = ?',
-      whereArgs: [taskId],
-    );
+  static Future<List<Map<String, dynamic>>> getCartItems() async {
+    final db = await DatabaseHelper.db();
+    return db.query("cartItems", orderBy: "cartId");
+  }
+
+  static Future<List<Map<String, dynamic>>> getCartItem(int id) async {
+    final db = await DatabaseHelper.db();
+    return db.query("cartItems", where: "id = ?", whereArgs: [id], limit: 1);
+  }
+
+  static Future<void> updateCartItem(Product product, bool increase) async {
+    final db = await DatabaseHelper.db();
+
+    final getUpdateItem = await getCartItem(product.id!);
+    final productFromDb = Product.fromJson(getUpdateItem[0]);
+
+    if (increase == false && productFromDb.quantity! < 2) {
+      deleteCartItem(productFromDb.id!);
+    } else {
+      final data = {
+        'id': product.id,
+        'title': product.title,
+        'url': product.url,
+        'slug': product.slug,
+        'content': product.content,
+        'image': product.image,
+        'thumbnail': product.thumbnail,
+        'status': product.status,
+        'category': product.category,
+        'quantity': increase
+            ? productFromDb.quantity! + 1
+            : productFromDb.quantity! - 1,
+      };
+
+      await db.update("cartItems", data,
+          where: "id = ?", whereArgs: [getUpdateItem[0]['id']]);
+    }
+  }
+
+  static Future<void> deleteCartItem(int id) async {
+    final db = await DatabaseHelper.db();
+
+    try {
+      await db.delete("cartItems", where: "id = ?", whereArgs: [id]);
+    } catch (e) {
+      print(e);
+      print('could not delete');
+    }
   }
 }

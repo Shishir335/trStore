@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: Consumer<ProductProvider>(builder: (context, provider, _) {
           return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.all(10),
               child: provider.homeScreenLoader
                   ? const CustomShimmer()
                   : ListView.separated(

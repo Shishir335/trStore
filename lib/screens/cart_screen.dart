@@ -13,21 +13,46 @@ class CartScreen extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(title: const Text('Cart')),
         body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          padding: const EdgeInsets.all(10),
           child: provider.cartProducts.isEmpty
               ? const Center(
                   child: Text(
                   'Cart is empty.',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ))
-              : ListView.separated(
-                  itemCount: provider.cartProducts.length,
-                  separatorBuilder: (context, index) {
-                    return const SizedBox(height: 10);
-                  },
-                  itemBuilder: (context, index) {
-                    return ProductCard(product: provider.cartProducts[index]);
-                  },
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: provider.cartProducts.length,
+                        separatorBuilder: (context, index) {
+                          return const SizedBox(height: 10);
+                        },
+                        itemBuilder: (context, index) {
+                          final product = provider.cartProducts[index];
+                          return Dismissible(
+                              key: Key(product.id.toString()),
+                              background: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(right: 20.0),
+                                child: const Icon(Icons.delete,
+                                    color: Colors.white, size: 36.0),
+                              ),
+                              onDismissed: (direction) {
+                                provider.deleteProduct(product);
+                              },
+                              child: ProductCard(
+                                  product: provider.cartProducts[index]));
+                        },
+                      ),
+                    ),
+                    Text('Swipe an Item to Delete',
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.red.shade300,
+                            fontWeight: FontWeight.bold))
+                  ],
                 ),
         ),
       );

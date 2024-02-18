@@ -25,11 +25,18 @@ class ProductCard extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: Row(children: [
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Hero(
                 tag: product.id!,
-                child: Image.network(product.image!,
-                    height: 50, width: 50, fit: BoxFit.cover),
+                child: Container(
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Image.network(product.image!,
+                        height: 70, fit: BoxFit.cover),
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 10),
@@ -44,9 +51,9 @@ class ProductCard extends StatelessWidget {
                     maxLines: 2, overflow: TextOverflow.ellipsis),
               ]),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              flex: 3,
+            const SizedBox(width: 5),
+            SizedBox(
+              width: 80,
               child: Consumer<CartProvider>(builder: (context, provider, _) {
                 Product? cartProduct = provider.getProduct(product.id!);
                 return cartProduct == null
@@ -54,29 +61,32 @@ class ProductCard extends StatelessWidget {
                         onPressed: () {
                           provider.addToCart(product);
                         },
-                        icon: const Icon(Icons.add_shopping_cart))
+                        icon: Icon(Icons.add_shopping_cart,
+                            color: AppColors.secondaryColor))
                     : Container(
                         decoration: BoxDecoration(
                             border: Border.all(),
                             borderRadius: BorderRadius.circular(5)),
-                        child: Row(children: [
-                          Padding(
-                              padding: const EdgeInsets.all(3),
-                              child: InkWell(
-                                  onTap: () {
-                                    provider.removeFromCart(product);
-                                  },
-                                  child: const Icon(Icons.remove))),
-                          Text(cartProduct.quantity.toString()),
-                          Padding(
-                            padding: const EdgeInsets.all(3),
-                            child: InkWell(
-                                onTap: () {
-                                  provider.addToCart(product);
-                                },
-                                child: const Icon(Icons.add)),
-                          ),
-                        ]),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.all(3),
+                                  child: InkWell(
+                                      onTap: () {
+                                        provider.updateProduct(product, false);
+                                      },
+                                      child: const Icon(Icons.remove))),
+                              Text(cartProduct.quantity.toString()),
+                              Padding(
+                                padding: const EdgeInsets.all(3),
+                                child: InkWell(
+                                    onTap: () {
+                                      provider.updateProduct(product, true);
+                                    },
+                                    child: const Icon(Icons.add)),
+                              ),
+                            ]),
                       );
               }),
             ),

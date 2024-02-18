@@ -24,7 +24,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           actions: const [CartIcon()],
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               Expanded(
@@ -32,17 +32,39 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   child: Column(children: [
                     Hero(
                       tag: widget.product.id!,
-                      child: Image.network(widget.product.image!,
-                          height: MediaQuery.of(context).size.width / 2,
-                          width: double.infinity,
-                          fit: BoxFit.cover),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: AppColors.primaryColor.withOpacity(.5))),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(widget.product.image!,
+                              height: MediaQuery.of(context).size.width / 2,
+                              width: double.infinity,
+                              fit: BoxFit.cover),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Text(widget.product.title!,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
+                            fontWeight: FontWeight.bold, fontSize: 20)),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        const Text("Category: ",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(widget.product.category!,
+                            style: const TextStyle(fontSize: 16)),
+                      ],
+                    ),
                     const SizedBox(height: 20),
-                    Text(widget.product.content!),
+                    Text(widget.product.content!,
+                        style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.w500)),
                     const SizedBox(height: 20),
                   ]),
                 ),
@@ -60,7 +82,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
-                          color: AppColors.primaryColor),
+                          color: AppColors.secondaryColor),
                       child: Center(
                           child: cartProduct != null
                               ? Padding(
@@ -72,8 +94,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       children: [
                                         IconButton(
                                             onPressed: () {
-                                              provider.removeFromCart(
-                                                  widget.product);
+                                              provider.updateProduct(
+                                                  widget.product, false);
                                             },
                                             icon: const Icon(
                                               Icons.remove,
@@ -87,8 +109,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                 fontWeight: FontWeight.bold)),
                                         IconButton(
                                             onPressed: () {
-                                              provider
-                                                  .addToCart(widget.product);
+                                              provider.updateProduct(
+                                                  widget.product, true);
                                             },
                                             icon: const Icon(
                                               Icons.add,
@@ -99,6 +121,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 )
                               : const Text('Add to cart',
                                   style: TextStyle(
+                                    fontWeight: FontWeight.bold,
                                       fontSize: 18, color: Colors.white)))),
                 );
               })

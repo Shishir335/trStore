@@ -6,7 +6,7 @@ class CartProvider with ChangeNotifier {
   List<Product> cartProducts = [];
 
   CartProvider() {
-    _init();
+    loadTasks();
   }
 
   Product? getProduct(int id) {
@@ -22,64 +22,37 @@ class CartProvider with ChangeNotifier {
   }
 
   addToCart(Product cartProduct) {
-    int index = cartProducts
-        .indexWhere((element) => element.id == cartProduct.id);
+    int index =
+        cartProducts.indexWhere((element) => element.id == cartProduct.id);
     if (index == -1) {
-      // cartProducts.add();
-      addProduct(Product(
-          id: cartProduct.id,
-          title: cartProduct.title,
-          content: cartProduct.content,
-          image: cartProduct.image,
-          quantity: 1));
-    } else {
-      cartProducts[index].quantity = cartProducts[index].quantity! + 1;
-      updateProduct(cartProducts[index]);
+      addProduct(cartProduct);
     }
     notifyListeners();
-  }
-
-  removeFromCart(Product cartProduct) {
-    int index = cartProducts
-        .indexWhere((element) => element.id == cartProduct.id);
-    if (index == -1) {
-    } else {
-      if (cartProducts[index].quantity! < 2) {
-        // cartProducts.removeAt(index);
-        deleteProduct(cartProducts[index]);
-      } else {
-        cartProducts[index].quantity = cartProducts[index].quantity! - 1;
-        updateProduct(cartProducts[index]);
-      }
-    }
-    notifyListeners();
-  }
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
-
-  Future<void> _init() async {
-    await databaseHelper.initDatabase();
-    // Perform other initialization tasks
   }
 
   Future<void> loadTasks() async {
-    await databaseHelper.initDatabase();
-    cartProducts = await databaseHelper.getTasks();
+    final data = await DatabaseHelper.getCartItems();
+    cartProducts.clear();
+    for (var element in data) {
+      cartProducts.add(Product.fromJson(element));
+    }
     notifyListeners();
   }
 
-  Future<void> addProduct(Product task) async {
-    await databaseHelper.insertProduct(task);
+  Future<void> addProduct(Product product) async {
+    await DatabaseHelper.addToCart(product);
     await loadTasks(); // Reload tasks after insertion
   }
 
-  Future<void> updateProduct(Product product) async {
-    await databaseHelper.updateTask(product);
+  Future<void> updateProduct(Product product, bool increase) async {
+    await DatabaseHelper.updateCartItem(product, increase);
+
     await loadTasks(); // Reload tasks after update
   }
 
   Future<void> deleteProduct(Product product) async {
-    await databaseHelper.deleteTask(product.id!);
+    await DatabaseHelper.deleteCartItem(product.id!);
+
     await loadTasks(); // Reload tasks after update
   }
 }
