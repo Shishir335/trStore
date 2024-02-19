@@ -32,20 +32,10 @@ class DatabaseHelper {
   static Future<int> addToCart(Product product) async {
     final db = await DatabaseHelper.db();
 
-    final data = {
-      'id': product.id,
-      'title': product.title,
-      'url': product.url,
-      'slug': product.slug,
-      'content': product.content,
-      'image': product.image,
-      'thumbnail': product.thumbnail,
-      'status': product.status,
-      'category': product.category,
-      'quantity': 1
-    };
+    // Product productToStoreInDB = product;
+    product.quantity = 1;
 
-    final id = await db.insert('cartItems', data,
+    final id = await db.insert('cartItems', product.toJson(),
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
 
     return id;
@@ -70,22 +60,10 @@ class DatabaseHelper {
     if (increase == false && productFromDb.quantity! < 2) {
       deleteCartItem(productFromDb.id!);
     } else {
-      final data = {
-        'id': product.id,
-        'title': product.title,
-        'url': product.url,
-        'slug': product.slug,
-        'content': product.content,
-        'image': product.image,
-        'thumbnail': product.thumbnail,
-        'status': product.status,
-        'category': product.category,
-        'quantity': increase
-            ? productFromDb.quantity! + 1
-            : productFromDb.quantity! - 1,
-      };
+      productFromDb.quantity =
+          increase ? productFromDb.quantity! + 1 : productFromDb.quantity! - 1;
 
-      await db.update("cartItems", data,
+      await db.update("cartItems", productFromDb.toJson(),
           where: "id = ?", whereArgs: [getUpdateItem[0]['id']]);
     }
   }

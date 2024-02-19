@@ -49,13 +49,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     const SizedBox(height: 10),
                     Text(widget.product.title!,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20)),
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20)),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Text("Category: ",
+                        Text("Category: ",
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16)),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: AppColors.secondaryColor)),
                         Text(widget.product.category!,
                             style: const TextStyle(fontSize: 16)),
                       ],
@@ -121,8 +125,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 )
                               : const Text('Add to cart',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                      fontSize: 18, color: Colors.white)))),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.white)))),
                 );
               })
             ],
